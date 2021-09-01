@@ -4,7 +4,7 @@ import { TaskRepository } from './task.repository';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 import { AuthModule } from '../auth/auth.module';
-import { AuthorizationMiddleware } from '../middlewares/authorization.middleware';
+import { AuthorizationMiddleware } from '../../middlewares/authorization.middleware';
 
 @Module({
   imports: [

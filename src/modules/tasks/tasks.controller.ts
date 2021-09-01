@@ -13,16 +13,16 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { TasksService } from '../tasks/tasks.service';
+import { TasksService } from './tasks.service';
 import { CreateTaskDTO } from './dto/create-task.dto';
-import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
+import { TaskStatusValidationPipe } from '../../pipes/task-status-validation.pipe';
 import { Task } from './task.entity';
-import { TaskStatus } from '../const/task-status.enum';
+import { TaskStatus } from '../../const/task-status.enum';
 import { GetTaskFilterDto } from './dto/get-task-filter.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthorizationMiddleware } from 'src/middlewares/authorization.middleware';
-import { Roles } from './role.decorator';
-import { Role } from '../const/roles.enum';
+import { Roles } from '../../decorators/role.decorator';
+import { Role } from '../../const/roles.enum';
 
 @Controller('tasks')
 @UseGuards(AuthGuard(), AuthorizationMiddleware)
