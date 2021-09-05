@@ -1,8 +1,10 @@
 import {
   Body,
+  CACHE_MANAGER,
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
@@ -23,15 +25,24 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthorizationMiddleware } from 'src/middlewares/authorization.middleware';
 import { Roles } from '../../decorators/role.decorator';
 import { Role } from '../../const/roles.enum';
+import { PaginationResultDto } from './pagination/paginationResult.dto';
+import { PaginationDto } from './pagination/pagination.dto';
+import { Cache } from 'cache-manager';
+import { RedisService } from 'src/redis/redis.service';
+
 
 @Controller('tasks')
 @UseGuards(AuthGuard(), AuthorizationMiddleware)
 export class TasksController {
-  constructor(private tasksService: TasksService) {}
+  constructor(
+    private tasksService: TasksService,
+    private readonly redisCacheService: RedisService
+  ) {}
 
   @Get()
-  getTasks(@Query(ValidationPipe) filterDto: GetTaskFilterDto): Promise<Task[]> {
-    console.log(filterDto);
+  getTasks(
+    @Query(ValidationPipe) filterDto: GetTaskFilterDto,
+  ): Promise<Task[] | PaginationResultDto> {
     return this.tasksService.getTasks(filterDto);
   }
 
@@ -39,14 +50,14 @@ export class TasksController {
   @Get('/test/admin')
   // @Roles(Role.Admin,Role.User)
   @Roles(Role.Admin)
-  getAdmin(@Req() req): any {
-    console.log(req.user);
-    return 'May la thang admin';
+  async getAdmin(@Req() req): Promise<any> {
+    await this.redisCacheService.set('test','admin');
+    return "halo admin";
   }
 
   @Get('/:id')
   getTaskById(@Param('id') id: number): Promise<Task> {
-    console.log(typeof(id))
+    console.log(typeof id);
     return this.tasksService.getTaskById(id);
   }
 
@@ -57,6 +68,7 @@ export class TasksController {
     // @Body('title') title: string,
     // @Body('description') description: string
   ): Promise<Task> {
+    console.log(createTaskDTO);
     return this.tasksService.createTask(createTaskDTO);
   }
 

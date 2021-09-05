@@ -42,7 +42,8 @@ export class AuthService {
       console.log(match);
       if (match) {
         let role = user.role;
-        let payload = { username, role };
+        let id = user.id;
+        let payload = { username, role, id };
         let accessToken = await this.jwtService.sign(payload);
         return { accessToken };
       } else {

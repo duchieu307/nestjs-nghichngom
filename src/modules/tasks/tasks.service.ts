@@ -5,6 +5,8 @@ import { TaskRepository } from './task.repository';
 import { Task } from './task.entity';
 import { TaskStatus } from '../../const/task-status.enum';
 import { GetTaskFilterDto } from './dto/get-task-filter.dto';
+import { PaginationDto } from './pagination/pagination.dto';
+import { PaginationResultDto } from './pagination/paginationResult.dto';
 
 @Injectable()
 export class TasksService {
@@ -13,15 +15,7 @@ export class TasksService {
     private taskRepository: TaskRepository,
   ) {}
 
-  // promise dùng để manage multiple asynchronous operations
-  // generic type xác định kiểu dữ liệu sau khi promise hoàn thành
-  // 3 trạng thái promise: reject, pending, hoàn thành
-  // await suspends the execution until an asynchronous function 
-  // return promise is fulfilled and unwraps the value from the Promise returned.
-
-  //nestjs's features !!!!!!!!!!!!!!!
-
-  async getTasks(getTaskFilterDto?: GetTaskFilterDto): Promise<Task[]> {
+  async getTasks(getTaskFilterDto?: GetTaskFilterDto): Promise<PaginationResultDto> {
     return await this.taskRepository.getTasks(getTaskFilterDto);
   }
 

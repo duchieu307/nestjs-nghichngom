@@ -19,11 +19,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload) {
+    console.log("Payload: ",payload);
     let { username } = payload;
     let user = await this.userRepository.findOne({username: username})
-    if (!user){
+    if (!user || user.id != payload.id){
       console.log("Guard chay");
-        throw new UnauthorizedException('User không tồn tai');
+        throw new UnauthorizedException('Token không hợp lệ');
     } else {
         console.log("Guard chay");
         return user;
