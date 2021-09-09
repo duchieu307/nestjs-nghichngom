@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { Task } from '../tasks/task.entity';
+import { Task } from 'src/modules/tasks/task.entity';
 
 @Entity()
 @Unique(['username'])

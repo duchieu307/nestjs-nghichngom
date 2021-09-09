@@ -8,9 +8,9 @@ import {
   Req
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from './auth.service';
-import { UserForCreation } from './dto/user-for-creation.dto';
-import { Test } from '@nestjs/testing';
+import { AuthService } from 'src/modules/auth/auth.service';
+import { UserForCreation } from 'src/modules/auth/dto/user-for-creation.dto';
+import { HttpResponse } from 'src/modules/HttpResponse';
 
 @Controller('auth')
 export class AuthController {
@@ -18,16 +18,26 @@ export class AuthController {
 
   @Post('/sign-up')
   @UsePipes(ValidationPipe)
-  signUp(@Body() userForCreation: UserForCreation) {
-    return this.authService.signUp(userForCreation);
+  async signUp(@Body() userForCreation: UserForCreation) : Promise<HttpResponse<any>>{
+    await this.authService.signUp(userForCreation);
+    return {
+      statusCode: 201,
+      message: 'Tạo User thành công',
+      data: "",
+    }
   }
 
   @Post('/sign-in')
-  signIn(
+  async signIn(
     @Body('username') username: string,
     @Body('password') password: string,
-  ): Promise<{ accessToken: string }> {
-    return this.authService.signIn(username, password);
+  ): Promise<HttpResponse<{ accessToken: string }>> {
+    const accessToken = await this.authService.signIn(username, password);
+    return {
+      statusCode: 201,
+      message: 'Đăng nhập thành công',
+      data: accessToken,
+    }
   }
 
   @Post('/test')

@@ -1,6 +1,6 @@
 import { Entity, EntityRepository, Repository } from 'typeorm';
-import { UserForCreation } from './dto/user-for-creation.dto';
-import { User } from './user.entity';
+import { UserForCreation } from 'src/modules/auth/dto/user-for-creation.dto';
+import { User } from 'src/modules/auth/user.entity';
 import * as bcrypt from 'bcrypt'; 
 import { ConflictException, InternalServerErrorException } from '@nestjs/common';
 

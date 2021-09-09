@@ -1,12 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTaskDTO } from './dto/create-task.dto';
-import { TaskRepository } from './task.repository';
-import { Task } from './task.entity';
-import { TaskStatus } from '../../const/task-status.enum';
-import { GetTaskFilterDto } from './dto/get-task-filter.dto';
-import { PaginationDto } from './pagination/pagination.dto';
-import { PaginationResultDto } from './pagination/paginationResult.dto';
+import { CreateTaskDTO } from 'src/modules/tasks/dto/create-task.dto';
+import { TaskRepository } from 'src/modules/tasks/task.repository';
+import { Task } from 'src/modules/tasks/task.entity';
+import { TaskStatus } from 'src/const/task-status.enum';
+import { GetTaskFilterDto } from 'src/modules/tasks/dto/get-task-filter.dto';
+import { TaskList } from 'src/modules/tasks/pagination/TaskList.dto';
 
 @Injectable()
 export class TasksService {
@@ -15,14 +14,13 @@ export class TasksService {
     private taskRepository: TaskRepository,
   ) {}
 
-  async getTasks(getTaskFilterDto?: GetTaskFilterDto): Promise<PaginationResultDto> {
-    return await this.taskRepository.getTasks(getTaskFilterDto);
+  getTasks(getTaskFilterDto?: GetTaskFilterDto): Promise<TaskList> {
+    let data = this.taskRepository.getTasks(getTaskFilterDto);
+    return data;
   }
 
-  async getTaskById(id: number): Promise<Task> {
-    console.log("service", typeof(id));
-    let task = await this.taskRepository.findOne(id);
-
+  getTaskById(id: number): Promise<Task> {
+    let task = this.taskRepository.findOne(id);
     if (!task) {
       throw new NotFoundException(`khong tim thay id ${id}`);
     } else {
@@ -31,7 +29,13 @@ export class TasksService {
   }
 
   async createTask(createTaskDto: CreateTaskDTO): Promise<Task> {
-    return this.taskRepository.createTask(createTaskDto);
+    // truyen vao du cac cot trong db thi phai ?
+    const task = await this.taskRepository.create({
+        title : createTaskDto.title,
+        description : createTaskDto.description,
+        status : TaskStatus.OPEN
+    });
+    return task;
   }
 
   async updateTask(id: number, status: TaskStatus): Promise<Task> {
@@ -45,9 +49,9 @@ export class TasksService {
     let result = await this.taskRepository.delete(id);
 
     if (result.affected === 0) {
-      return 'Khong tim thay task';
+      throw new NotFoundException("Không tìm thấy Task")
     }
 
-    return 'Xoa thanh cong';
+    return 'Xóa Task thành công';
   }
 }

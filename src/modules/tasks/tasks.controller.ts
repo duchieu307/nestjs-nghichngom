@@ -15,35 +15,39 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { TasksService } from './tasks.service';
-import { CreateTaskDTO } from './dto/create-task.dto';
-import { TaskStatusValidationPipe } from '../../pipes/task-status-validation.pipe';
-import { Task } from './task.entity';
-import { TaskStatus } from '../../const/task-status.enum';
-import { GetTaskFilterDto } from './dto/get-task-filter.dto';
+import { TasksService } from 'src/modules/tasks/tasks.service';
+import { CreateTaskDTO } from 'src/modules/tasks/dto/create-task.dto';
+import { TaskStatusValidationPipe } from 'src/pipes/task-status-validation.pipe';
+import { Task } from 'src/modules/tasks/task.entity';
+import { TaskStatus } from 'src/const/task-status.enum';
+import { GetTaskFilterDto } from 'src/modules/tasks/dto/get-task-filter.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthorizationMiddleware } from 'src/middlewares/authorization.middleware';
-import { Roles } from '../../decorators/role.decorator';
-import { Role } from '../../const/roles.enum';
-import { PaginationResultDto } from './pagination/paginationResult.dto';
-import { PaginationDto } from './pagination/pagination.dto';
-import { Cache } from 'cache-manager';
+import { Roles } from 'src/decorators/role.decorator';
+import { Role } from 'src/const/roles.enum';
+import { TaskList } from 'src/modules/tasks/pagination/TaskList.dto';
 import { RedisService } from 'src/redis/redis.service';
-
+import { HttpResponse } from 'src/modules/HttpResponse';
 
 @Controller('tasks')
+@UsePipes(new ValidationPipe({ transform: true }))
 @UseGuards(AuthGuard(), AuthorizationMiddleware)
 export class TasksController {
   constructor(
     private tasksService: TasksService,
-    private readonly redisCacheService: RedisService
+    private readonly redisCacheService: RedisService,
   ) {}
 
   @Get()
-  getTasks(
-    @Query(ValidationPipe) filterDto: GetTaskFilterDto,
-  ): Promise<Task[] | PaginationResultDto> {
-    return this.tasksService.getTasks(filterDto);
+  async getTasks(
+    @Query() filterDto: GetTaskFilterDto,
+  ): Promise<HttpResponse<TaskList>> {
+    const data = await this.tasksService.getTasks(filterDto);
+    return {
+      statusCode: 200,
+      message: 'Success',
+      data: data,
+    };;
   }
 
   // @UseGuards(AuthorizationMiddleware)
@@ -51,38 +55,54 @@ export class TasksController {
   // @Roles(Role.Admin,Role.User)
   @Roles(Role.Admin)
   async getAdmin(@Req() req): Promise<any> {
-    await this.redisCacheService.set('test','admin');
-    return "halo admin";
+    await this.redisCacheService.set('test', 'admin');
+    return 'halo admin';
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: number): Promise<Task> {
-    console.log(typeof id);
-    return this.tasksService.getTaskById(id);
+  async getTaskById(@Param('id') id: number): Promise<HttpResponse<Task>> {
+    const data = await this.tasksService.getTaskById(id);
+    return {
+      statusCode: 200,
+      message: 'Success',
+      data: data,
+    };;
   }
 
   @Post()
-  @UsePipes(ValidationPipe)
-  createTask(
+  async createTask(
     @Body() createTaskDTO: CreateTaskDTO,
     // @Body('title') title: string,
     // @Body('description') description: string
-  ): Promise<Task> {
-    console.log(createTaskDTO);
-    return this.tasksService.createTask(createTaskDTO);
+  ): Promise<HttpResponse<Task>> {
+    const data = await this.tasksService.createTask(createTaskDTO);
+    return {
+      statusCode: 201,
+      message: 'Tạo Task thành công',
+      data: data,
+    };; 
   }
 
   @Patch('/:id/status')
-  updateTaskById(
+  async updateTaskById(
     @Param('id') id: number,
     @Body('status', TaskStatusValidationPipe) status: TaskStatus,
-  ) {
-    return this.tasksService.updateTask(id, status);
+  ): Promise<HttpResponse<Task>> {
+    const data = await this.tasksService.updateTask(id, status);
+    return {
+      statusCode: 200,
+      message: 'Update Task thành công',
+      data: data,
+    };
   }
 
   @Delete('/:id')
-  deleteTaskById(@Param('id') id: number): Promise<any> {
-    console.log('delete id:', id);
-    return this.tasksService.deleteTask(id);
+  async deleteTaskById(@Param('id') id: number): Promise<HttpResponse<any>> {
+    const message = await this.tasksService.deleteTask(id);
+    return {
+      statusCode: 200,
+      message: message,
+      data: "",
+    }; 
   }
 }

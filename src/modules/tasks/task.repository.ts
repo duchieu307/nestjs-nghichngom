@@ -1,19 +1,22 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { CreateTaskDTO } from './dto/create-task.dto';
-import { TaskStatus } from '../../const/task-status.enum';
-import { Task } from './task.entity';
-import { GetTaskFilterDto } from './dto/get-task-filter.dto';
-import { PaginationResultDto } from './pagination/paginationResult.dto';
+import { CreateTaskDTO } from 'src/modules/tasks/dto/create-task.dto';
+import { TaskStatus } from 'src/const/task-status.enum';
+import { Task } from 'src/modules/tasks/task.entity';
+import { GetTaskFilterDto } from 'src/modules/tasks/dto/get-task-filter.dto';
+import { TaskList } from 'src/modules/tasks/pagination/TaskList.dto';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
   async getTasks(
     getTaskFilterDto?: GetTaskFilterDto,
-  ): Promise<PaginationResultDto> {
-    let { status, search } = getTaskFilterDto;
+  ): Promise<TaskList> {
 
-    const limit = getTaskFilterDto.limit ? Number(getTaskFilterDto.limit) : 10;
-    const page = getTaskFilterDto.page ? Number(getTaskFilterDto.page) : 1;
+    const limit = getTaskFilterDto.limit ;
+    const page = getTaskFilterDto.page ;
+    const status = getTaskFilterDto.status;
+    const search = getTaskFilterDto.search;
+
+    //offset day ne
     const skippedItems = (page - 1) * limit;
 
     let query = this.createQueryBuilder('task');
@@ -37,7 +40,7 @@ export class TaskRepository extends Repository<Task> {
     const total = await this.count();
     
     return {
-      data: tasks,
+      tasks: tasks,
       total: total,
       page: page,
       limit: limit,

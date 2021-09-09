@@ -7,22 +7,19 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { TaskStatus } from '../../../const/task-status.enum';
+import { TaskStatus } from 'src/const/task-status.enum';
+import { Pagination } from 'src/pipes/pagination.pipe';
 
-export class GetTaskFilterDto {
+export class GetTaskFilterDto extends Pagination {
+
   @IsOptional()
   @IsIn([TaskStatus.OPEN, TaskStatus.IN_PROGRESS, TaskStatus.DONE])
   status: TaskStatus;
 
-  search: string;
+  search: string ="a";
 
-  @IsNumberString()
-  @IsOptional()
-  page: number ;
-
-  // @IsInt()
-  // @Type(() => Number)
-  @IsNumberString()
-  @IsOptional()
-  limit: number;
+  constructor(){
+    super()
+    console.log(this.page)
+  }
 }

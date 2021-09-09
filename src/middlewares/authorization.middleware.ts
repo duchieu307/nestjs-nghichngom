@@ -5,7 +5,6 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { NextFunction } from 'express';
 
 @Injectable()
 export class AuthorizationMiddleware implements CanActivate {
