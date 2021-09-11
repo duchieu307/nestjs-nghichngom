@@ -58,7 +58,7 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-prettier": "^3.4.1",
-    "husky": "^7.0.2",
+    "husky": "^4.3.8",
     "jest": "^26.6.3",
     "lint-staged": "^11.1.2",
     "prettier": "2.4.0",
@@ -94,7 +94,7 @@
   "lint-staged": {
     "**/*.ts": [
       "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-        "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+      "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
       "git add -A"
     ]
   }
