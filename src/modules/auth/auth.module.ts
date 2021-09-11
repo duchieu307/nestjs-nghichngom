@@ -6,6 +6,7 @@ import { UserRepository } from 'src/modules/auth/user.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from 'src/middlewares/jwt.strategy';
+import { RedisModule } from '../../redis/redis.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { JwtStrategy } from 'src/middlewares/jwt.strategy';
       },
     }),
     TypeOrmModule.forFeature([UserRepository]),
+    RedisModule
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

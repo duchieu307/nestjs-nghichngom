@@ -5,16 +5,19 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Req
+  Req,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { UserForCreation } from 'src/modules/auth/dto/user-for-creation.dto';
 import { HttpResponse } from 'src/modules/HttpResponse';
+import { RedisService } from 'src/redis/redis.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+    private readonly redisCacheService: RedisService,
+    ) {}
 
   @Post('/sign-up')
   @UsePipes(ValidationPipe)
@@ -32,6 +35,7 @@ export class AuthController {
     @Body('username') username: string,
     @Body('password') password: string,
   ): Promise<HttpResponse<{ accessToken: string }>> {
+    await this.redisCacheService.set('test', 'dang nhap');
     const accessToken = await this.authService.signIn(username, password);
     return {
       statusCode: 201,

@@ -4,7 +4,7 @@ import { typeOrmConfig } from 'src/config/typeorm.config';
 import { TasksModule } from 'src/modules/tasks/tasks.module';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { RedisModule } from 'src/redis/redis.module';
-import * as redisStore from 'cache-manager-redis-store';
+import { RedisService } from './redis/redis.service';
 
 @Module({
   imports: [
@@ -13,6 +13,6 @@ import * as redisStore from 'cache-manager-redis-store';
     AuthModule,
     RedisModule,
   ],
-  providers: [],
+  providers: [RedisService],
 })
 export class AppModule {}

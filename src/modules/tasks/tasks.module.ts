@@ -5,10 +5,14 @@ import { TasksController } from 'src/modules/tasks/tasks.controller';
 import { TasksService } from 'src/modules/tasks/tasks.service';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { AuthorizationMiddleware } from 'src/middlewares/authorization.middleware';
-import { RedisModule } from 'src/redis/redis.module';
+import { RedisModule } from '../../redis/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TaskRepository]), AuthModule,RedisModule],
+  imports: [
+    TypeOrmModule.forFeature([TaskRepository]),
+    AuthModule,
+    RedisModule,
+  ],
   controllers: [TasksController],
   providers: [TasksService, AuthorizationMiddleware],
 })
