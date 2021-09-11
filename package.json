@@ -87,9 +87,15 @@
     "testEnvironment": "node"
   },
   "husky": {
-    "hooks":{
-      "pre-commit": "yarn run lint . && yarn run format. && git add -A ."
+    "hooks": {
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+      "git add -A"
+    ]
   }
-
 }
