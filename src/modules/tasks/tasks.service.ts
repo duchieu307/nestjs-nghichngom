@@ -29,6 +29,7 @@ export class TasksService {
   }
 
   async createTask(createTaskDto: CreateTaskDTO): Promise<Task> {
+    let a = 0;
     // truyen vao du cac cot trong db thi phai ?
     const task = await this.taskRepository.create({
       title: createTaskDto.title,
