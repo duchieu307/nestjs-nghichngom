@@ -36,6 +36,7 @@ export class AuthController {
     @Body('password') password: string,
   ): Promise<HttpResponse<{ accessToken: string }>> {
     await this.redisCacheService.set('test', 'dang nhap');
+    console.log(process.env.DATABASE_USER)
     const accessToken = await this.authService.signIn(username, password);
     return {
       statusCode: 201,
