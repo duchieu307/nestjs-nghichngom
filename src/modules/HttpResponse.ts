@@ -1,5 +1,5 @@
 export class HttpResponse<T> {
-    data: T;
-    statusCode: number = 200;
-    message: string = "Success";
+  data: T;
+  statusCode = 200;
+  message = 'Success';
 }

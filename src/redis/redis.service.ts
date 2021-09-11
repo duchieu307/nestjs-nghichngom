@@ -12,6 +12,4 @@ export class RedisService {
   async set(key, value) {
     await this.cache.set(key, value, { ttl: 1000000 });
   }
-
- 
 }

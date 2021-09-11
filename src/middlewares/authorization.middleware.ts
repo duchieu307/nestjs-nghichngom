@@ -16,13 +16,12 @@ export class AuthorizationMiddleware implements CanActivate {
       context.getHandler(), //read metadata
       context.getClass(), //extract metadata
     ]);
-    if (!requiredRole){
-        return true
-    } 
+    if (!requiredRole) {
+      return true;
+    }
     console.log(requiredRole);
     const { user } = context.switchToHttp().getRequest();
     console.log(user);
     return requiredRole.some((role) => user.role?.includes(role));
-    
   }
 }

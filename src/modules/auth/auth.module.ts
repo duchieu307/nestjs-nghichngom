@@ -18,10 +18,10 @@ import { RedisModule } from '../../redis/redis.module';
       },
     }),
     TypeOrmModule.forFeature([UserRepository]),
-    RedisModule
+    RedisModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [JwtStrategy,PassportModule]
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}

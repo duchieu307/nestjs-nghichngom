@@ -7,7 +7,6 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { RedisModule } from 'src/redis/redis.module';
 import { RedisService } from './redis/redis.service';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot(),

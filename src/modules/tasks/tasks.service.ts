@@ -15,12 +15,12 @@ export class TasksService {
   ) {}
 
   getTasks(getTaskFilterDto?: GetTaskFilterDto): Promise<TaskList> {
-    let data = this.taskRepository.getTasks(getTaskFilterDto);
+    const data = this.taskRepository.getTasks(getTaskFilterDto);
     return data;
   }
 
   getTaskById(id: number): Promise<Task> {
-    let task = this.taskRepository.findOne(id);
+    const task = this.taskRepository.findOne(id);
     if (!task) {
       throw new NotFoundException(`khong tim thay id ${id}`);
     } else {
@@ -31,25 +31,25 @@ export class TasksService {
   async createTask(createTaskDto: CreateTaskDTO): Promise<Task> {
     // truyen vao du cac cot trong db thi phai ?
     const task = await this.taskRepository.create({
-        title : createTaskDto.title,
-        description : createTaskDto.description,
-        status : TaskStatus.OPEN
+      title: createTaskDto.title,
+      description: createTaskDto.description,
+      status: TaskStatus.OPEN,
     });
     return task;
   }
 
   async updateTask(id: number, status: TaskStatus): Promise<Task> {
-    let newTask = await this.getTaskById(id);
+    const newTask = await this.getTaskById(id);
     newTask.status = status;
     newTask.save();
     return newTask;
   }
 
   async deleteTask(id: number): Promise<any> {
-    let result = await this.taskRepository.delete(id);
+    const result = await this.taskRepository.delete(id);
 
     if (result.affected === 0) {
-      throw new NotFoundException("Không tìm thấy Task")
+      throw new NotFoundException('Không tìm thấy Task');
     }
 
     return 'Xóa Task thành công';

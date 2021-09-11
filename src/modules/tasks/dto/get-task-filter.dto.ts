@@ -11,15 +11,14 @@ import { TaskStatus } from 'src/const/task-status.enum';
 import { Pagination } from 'src/pipes/pagination.pipe';
 
 export class GetTaskFilterDto extends Pagination {
-
   @IsOptional()
   @IsIn([TaskStatus.OPEN, TaskStatus.IN_PROGRESS, TaskStatus.DONE])
   status: TaskStatus;
 
-  search: string ="a";
+  search = 'a';
 
-  constructor(){
-    super()
-    console.log(this.page)
+  constructor() {
+    super();
+    console.log(this.page);
   }
 }

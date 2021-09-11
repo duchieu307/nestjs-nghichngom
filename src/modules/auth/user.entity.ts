@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { Task } from 'src/modules/tasks/task.entity';
 
 @Entity()
@@ -17,6 +24,6 @@ export class User extends BaseEntity {
   role: string;
 
   //typeORM
-  @OneToMany(type => Task, task => task.user, {eager: true})
+  @OneToMany((type) => Task, (task) => task.user, { eager: true })
   tasks: Task[];
 }

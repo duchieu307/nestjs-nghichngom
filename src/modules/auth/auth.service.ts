@@ -32,19 +32,19 @@ export class AuthService {
     username: string,
     password: string,
   ): Promise<{ accessToken: string }> {
-    let user = await this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: { username: username },
     });
     if (!user) {
       throw new UnauthorizedException('Username không tồn tại');
     } else {
-      let match = await bcrypt.compare(password, user.password);
+      const match = await bcrypt.compare(password, user.password);
       console.log(match);
       if (match) {
-        let role = user.role;
-        let id = user.id;
-        let payload = { username, role, id };
-        let accessToken = await this.jwtService.sign(payload);
+        const role = user.role;
+        const id = user.id;
+        const payload = { username, role, id };
+        const accessToken = await this.jwtService.sign(payload);
         return { accessToken };
       } else {
         throw new UnauthorizedException('Sai password');

@@ -1,15 +1,14 @@
-import { Type } from "class-transformer";
-import { IsInt, IsOptional } from "class-validator";
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional } from 'class-validator';
 
 export class Pagination {
   @IsOptional()
   @IsInt()
   @Type(() => Number)
-  limit : number = 10 ;
+  limit = 10;
 
   @IsOptional()
   @IsInt()
   @Type(() => Number)
-  page: number = 1 ;  
-
+  page = 1;
 }

@@ -47,7 +47,7 @@ export class TasksController {
       statusCode: 200,
       message: 'Success',
       data: data,
-    };;
+    };
   }
 
   // @UseGuards(AuthorizationMiddleware)
@@ -66,7 +66,7 @@ export class TasksController {
       statusCode: 200,
       message: 'Success',
       data: data,
-    };;
+    };
   }
 
   @Post()
@@ -80,7 +80,7 @@ export class TasksController {
       statusCode: 201,
       message: 'Tạo Task thành công',
       data: data,
-    };; 
+    };
   }
 
   @Patch('/:id/status')
@@ -102,7 +102,7 @@ export class TasksController {
     return {
       statusCode: 200,
       message: message,
-      data: "",
-    }; 
+      data: '',
+    };
   }
 }

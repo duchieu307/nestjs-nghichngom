@@ -7,19 +7,16 @@ import { TaskList } from 'src/modules/tasks/pagination/TaskList.dto';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
-  async getTasks(
-    getTaskFilterDto?: GetTaskFilterDto,
-  ): Promise<TaskList> {
-
-    const limit = getTaskFilterDto.limit ;
-    const page = getTaskFilterDto.page ;
+  async getTasks(getTaskFilterDto?: GetTaskFilterDto): Promise<TaskList> {
+    const limit = getTaskFilterDto.limit;
+    const page = getTaskFilterDto.page;
     const status = getTaskFilterDto.status;
     const search = getTaskFilterDto.search;
 
     //offset day ne
     const skippedItems = (page - 1) * limit;
 
-    let query = this.createQueryBuilder('task');
+    const query = this.createQueryBuilder('task');
 
     if (status) {
       query.andWhere('task.status = :status', { status });
@@ -38,7 +35,7 @@ export class TaskRepository extends Repository<Task> {
       .limit(limit < 10 ? limit : 10)
       .getMany();
     const total = await this.count();
-    
+
     return {
       tasks: tasks,
       total: total,
@@ -48,9 +45,9 @@ export class TaskRepository extends Repository<Task> {
   }
 
   async createTask(createTaskDto: CreateTaskDTO): Promise<Task> {
-    let { title, description } = createTaskDto;
+    const { title, description } = createTaskDto;
 
-    let newTask = new Task();
+    const newTask = new Task();
     newTask.title = title;
     newTask.description = description;
     newTask.status = TaskStatus.OPEN;
