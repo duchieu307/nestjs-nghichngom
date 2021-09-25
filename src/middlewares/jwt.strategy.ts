@@ -1,16 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { UserRepository } from 'src/modules/auth/user.repository';
+import { RedisService } from '../redis/redis.service';
+import { JwtService } from '@nestjs/jwt';
 
 // code giống doc
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
-  ) {
+  constructor(private readonly redisCacheService: RedisService, private jwtService: JwtService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: 'can1cogaivuto',
@@ -18,15 +19,25 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload) {
-    console.log('Payload: ', payload);
-    const { username } = payload;
-    const user = await this.userRepository.findOne({ username: username });
-    if (!user || user.id != payload.id) {
-      console.log('Guard chay');
-      throw new UnauthorizedException('Token không hợp lệ');
-    } else {
-      console.log('Guard chay');
-      return user;
+    try {
+      const refreshToken = payload.refreshToken;
+      const checkRedisToken = await this.redisCacheService.get(refreshToken);
+
+    } catch (error) {
+      throw new UnauthorizedException("Token ko hop le");
     }
+
+    console.log(payload)
+
+    
+    // if (checkRedisToken == null) {
+    //   throw new UnauthorizedException('Token không hợp lệ');
+    // }
+
+    return {
+      username: payload.username,
+      userId: payload.id,
+      userRole: payload.role,
+    };
   }
 }

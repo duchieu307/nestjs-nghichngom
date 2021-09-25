@@ -6,6 +6,8 @@ import {
   UsePipes,
   ValidationPipe,
   Req,
+  UnauthorizedException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/modules/auth/auth.service';
@@ -37,20 +39,54 @@ export class AuthController {
   async signIn(
     @Body('username') username: string,
     @Body('password') password: string,
-  ): Promise<HttpResponse<{ accessToken: string }>> {
-    await this.redisCacheService.set('test', 'dang nhap');
+  ): Promise<HttpResponse<{ accessToken: string; refreshToken: string }>> {
     console.log(process.env.DATABASE_USER);
-    const accessToken = await this.authService.signIn(username, password);
+    const { accessToken, refreshToken } = await this.authService.signIn(
+      username,
+      password,
+    );
     return {
       statusCode: 201,
       message: 'Đăng nhập thành công',
-      data: accessToken,
+      data: { accessToken, refreshToken },
     };
   }
 
-  @Post('/test')
+  @Post('/refresh-token')
+  async refreshToken(
+    @Req() req,
+    @Body('refreshToken', ParseUUIDPipe) refreshToken: string,
+  ): Promise<HttpResponse<{ newToken: string; newRefreshToken: string }>> {
+    if (!req.headers.authorization.match(/^Bearer /g)) {
+      throw new UnauthorizedException('Token ko hop le');
+    }
+    const token = req.headers.authorization.split(' ')[1];
+
+    const { newToken, newRefreshToken } = await this.authService.refreshToken(
+      token,
+      refreshToken,
+    );
+    return {
+      statusCode: 201,
+      message: 'Cấp mới token thành công',
+      data: { newToken, newRefreshToken },
+    };
+  }
+
+  @Post('/logout')
   @UseGuards(AuthGuard())
-  test(@Req() req) {
-    console.log(req);
+  async logOut(
+    @Body('refreshToken', ParseUUIDPipe) refreshToken: string,
+  ): Promise<HttpResponse<any>> {
+    try {
+      await this.redisCacheService.delete(refreshToken);
+    } catch (error) {
+      throw new UnauthorizedException('Token ko hop le');
+    }
+    return {
+      statusCode: 200,
+      message: 'Đăng xuất thành công',
+      data: '',
+    };
   }
 }

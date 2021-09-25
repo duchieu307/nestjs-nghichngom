@@ -4,6 +4,8 @@ import { UserRepository } from 'src/modules/auth/user.repository';
 import { UserForCreation } from 'src/modules/auth/dto/user-for-creation.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { v4 as uuidv4 } from 'uuid';
+import { RedisService } from '../../redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -11,27 +13,17 @@ export class AuthService {
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
     private jwtService: JwtService,
+    private readonly redisCacheService: RedisService,
   ) {}
 
   async signUp(userForCreation: UserForCreation) {
     return this.userRepository.signUp(userForCreation);
   }
 
-  //   async findUserWithUsername(username: string) {
-  //     let user = await this.userRepository.find(
-  //         { where: { username: username }
-  //     });
-  //     if(!user){
-  //         return null;
-  //     } else {
-  //         return user;
-  //     }
-  //   }
-
   async signIn(
     username: string,
     password: string,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const user = await this.userRepository.findOne({
       where: { username: username },
     });
@@ -43,12 +35,37 @@ export class AuthService {
       if (match) {
         const role = user.role;
         const id = user.id;
-        const payload = { username, role, id };
+        const refreshToken = uuidv4();
+        const payload = { username, role, id, refreshToken };
         const accessToken = await this.jwtService.sign(payload);
-        return { accessToken };
+        this.redisCacheService.set(refreshToken, accessToken);
+        return { accessToken, refreshToken };
       } else {
         throw new UnauthorizedException('Sai password');
       }
+    }
+  }
+
+  async refreshToken(oldToken: string, refreshToken: string) {
+    const redisToken = await this.redisCacheService.get(refreshToken);
+    if (oldToken != redisToken) {
+      throw new UnauthorizedException('Token khong hop le');
+    } else {
+      const newRefreshToken = uuidv4();
+      const oldData = await this.jwtService.verify(oldToken,{
+        ignoreExpiration: true
+      });
+      // nen them kieu cua payload
+      const payload = {
+        username: oldData.username,
+        role: oldData.role,
+        id: oldData.id,
+        refreshToken: newRefreshToken,
+      };
+      const newToken = await this.jwtService.sign(payload);
+      await this.redisCacheService.delete(refreshToken);
+      await this.redisCacheService.set(newRefreshToken, newToken);
+      return { newToken, newRefreshToken };
     }
   }
 }

@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from 'src/middlewares/jwt.strategy';
 import { RedisModule } from '../../redis/redis.module';
+import { RedisService } from '../../redis/redis.service';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RedisModule } from '../../redis/redis.module';
     JwtModule.register({
       secret: 'can1cogaivuto',
       signOptions: {
+        // 1 tieng
         expiresIn: 3600,
       },
     }),
